@@ -248,8 +248,9 @@ class IHNTMobFinder:
         
         # Generate random position within hunting zone for movement
         angle = random.uniform(0, 2 * math.pi)  # 0 to 2π radians
-        # Use smaller distance for movement (stay within zone)
-        distance = random.uniform(100, self.hunting_zone_radius * 0.8)  # 80% of zone radius
+        # Use moderate distance for movement - not too big or too small
+        # Range: 80-200 pixels from center (good balance for movement)
+        distance = random.uniform(80, 200)
         
         # Calculate position
         move_x = int(char_x + distance * math.cos(angle))
@@ -281,14 +282,52 @@ class IHNTMobFinder:
             print(f"🚶 ZONE MOVEMENT: No mobs in zone for {time_since_last_mob:.1f}s - moving to {move_pos}")
             
             try:
-                # Click to move character within zone
+                # Step 1: Double left click on random point with 1 second delay
+                print(f"   🖱️ Double left click at {move_pos}")
                 pyautogui.click(move_pos[0], move_pos[1], button='left')
-                time.sleep(self.movement_click_delay)
+                time.sleep(1.0)  # Wait 1 second as specified
+                pyautogui.click(move_pos[0], move_pos[1], button='left')
+                
+                # Brief pause between double click and right-click movement
+                time.sleep(0.5)
+                
+                # Step 2: Right click and move left or right for 1 second
+                import random
+                direction = random.choice(['left', 'right'])
+                print(f"   🖱️ Right click and move {direction} for 1 second")
+                
+                # Start right click drag movement
+                pyautogui.mouseDown(button='right')
+                
+                # Calculate movement distance (moderate radius - not too big or small)
+                movement_distance = random.randint(50, 150)  # 50-150 pixels movement
+                if direction == 'left':
+                    end_x = move_pos[0] - movement_distance
+                else:
+                    end_x = move_pos[0] + movement_distance
+                
+                # Smooth movement over 1 second
+                start_time = time.time()
+                start_x = move_pos[0]
+                
+                while time.time() - start_time < 1.0:
+                    elapsed = time.time() - start_time
+                    progress = elapsed / 1.0  # 0 to 1
+                    
+                    # Smooth interpolation
+                    current_x = start_x + (end_x - start_x) * progress
+                    pyautogui.moveTo(int(current_x), move_pos[1])
+                    time.sleep(0.01)  # Small delay for smooth movement
+                
+                # Release right click
+                pyautogui.mouseUp(button='right')
+                
+                print(f"   ✅ Movement complete: {direction} for 1 second")
                 
                 # Reset timer after movement
                 self.last_mob_seen_time = time.time()
             except Exception as e:
-                print(f"   ❌ Movement click failed: {e}")
+                print(f"   ❌ Movement failed: {e}")
         
     def update_mob_detection_status(self, mobs_found):
         """Update mob detection status for zone movement"""
