@@ -1,0 +1,16 @@
+# YOLO Mob Finder Requirements
+# Real-time object detection for gaming automation
+
+# Core YOLO and AI libraries
+ultralytics>=8.0.0        # YOLOv8 for real-time object detection (includes torch dependencies)
+opencv-python>=4.8.0      # Computer vision and image processing
+
+# System and automation libraries  
+pyautogui>=0.9.54         # Mouse and keyboard automation
+mss>=9.0.1                # Ultra-fast screen capture
+numpy>=1.24.0             # Numerical operations (required by OpenCV and YOLO)
+pynput>=1.7.6             # Global hotkeys and input monitoring
+
+# Optional: GPU acceleration (if available)
+# nvidia-ml-py3           # NVIDIA GPU monitoring
+# cupy-cuda11x            # GPU acceleration for CUDA 11.x
